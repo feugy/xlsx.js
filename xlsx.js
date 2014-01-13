@@ -15,7 +15,7 @@ function xlsx(file) {
 	var defaultFontSize = 11;
 
 	var result, zip = new JSZip(), zipTime, processTime, s, f, i, j, k, l, t, w, sharedStrings, styles, index, data, val, style, borders, border, borderIndex, fonts, font, fontIndex,
-		docProps, xl, xlWorksheets, worksheet, contentTypes = [[], []], props = [], xlRels = [], worksheets = [], id, columns, cols, colWidth, cell, row, merges, merged,
+		color, fills, fill, fillIndex, docProps, xl, xlWorksheets, worksheet, contentTypes = [[], []], props = [], xlRels = [], worksheets = [], id, columns, cols, colWidth, cell, row, merges, merged,
 		numFmts = ['General', '0', '0.00', '#,##0', '#,##0.00',,,,, '0%', '0.00%', '0.00E+00', '# ?/?', '# ??/??', 'mm-dd-yy', 'd-mmm-yy', 'd-mmm', 'mmm-yy', 'h:mm AM/PM', 'h:mm:ss AM/PM',
 			'h:mm', 'h:mm:ss', 'm/d/yy h:mm',,,,,,,,,,,,,,, '#,##0 ;(#,##0)', '#,##0 ;[Red](#,##0)', '#,##0.00;(#,##0.00)', '#,##0.00;[Red](#,##0.00)',,,,, 'mm:ss', '[h]:mm:ss', 'mmss.0', '##0.0E+0', '@'],
 		alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -163,6 +163,7 @@ function xlsx(file) {
 		// Content dependent
 		styles = new Array(1);
 		borders = new Array(1);
+		fills = new Array(1);
 		fonts = new Array(1);
 		w = file.worksheets.length;
 		while (w--) { 
@@ -188,7 +189,8 @@ function xlsx(file) {
 						italic: cell.italic,
 						fontName: cell.fontName,
 						fontSize: cell.fontSize,
-						formatCode: cell.formatCode || 'General'
+						formatCode: cell.formatCode || 'General',
+						fill: cell.fill
 					};
 					colWidth = 0;
 					if (val && typeof val === 'string' && !isFinite(val)) { 
@@ -350,7 +352,7 @@ function xlsx(file) {
 				// order is significative
 				for (var edge in {left:0, right:0, top:0, bottom:0, diagonal:0}) {
 					if (style.borders[edge]) {
-						var color = style.borders[edge];
+						color = style.borders[edge];
 						// add transparency if missing
 						if (color.length === 6) {
 							color = 'FF'+color;
@@ -366,6 +368,24 @@ function xlsx(file) {
 				borderIndex = borders.indexOf(border);
 				if (borderIndex < 0) {
 					borderIndex = borders.push(border) - 1;
+				}
+			}
+			
+			// fill declaration: add a new declaration and refer to it in style
+			fillIndex = 0;
+			if (style.fill && style.fill.color) {
+				color = style.fill.color;
+				if (color.length === 6) {
+					color = 'FF'+color;
+				}
+				fill = '<fill><patternFill patternType="' +
+				(style.fill.patternType || 'solid') +
+				'"><fgColor rgb="' +
+				color +
+				'"/><bgColor indexed="64"/></patternFill></fill>';
+				fillIndex = fills.indexOf(fill);
+				if (fillIndex < 0) {
+					fillIndex = fills.push(fill) - 1;
 				}
 			}
 
@@ -392,7 +412,9 @@ function xlsx(file) {
 			}
 
 			// declares style, and refer to optionnal formatCode, font and borders
-			styles[i] = ['<xf xfId="0" fillId="0" borderId="', 
+			styles[i] = ['<xf xfId="0" fillId="',
+				fillIndex,
+				'" borderId="', 
 				borderIndex, 
 				'" fontId="',
 				fontIndex,
