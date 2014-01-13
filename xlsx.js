@@ -48,8 +48,8 @@ function xlsx(file) {
 		return (s || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#x27;/g, '\''); 
 	}
 
-   if (typeof file === 'string') { 
-   	// Load
+	if (typeof file === 'string') { 
+		// Load
 		zipTime = Date.now();
 		zip = zip.load(file, { base64: true });
 		result = { worksheets: [], zipTime: Date.now() - zipTime };
@@ -161,9 +161,9 @@ function xlsx(file) {
 			+ (file.created || new Date()).toISOString() + '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' + (file.modified || new Date()).toISOString() + '</dcterms:modified></cp:coreProperties>');
 
 		// Content dependent
-    styles = new Array(1);
-    borders = new Array(1);
-    fonts = new Array(1);
+		styles = new Array(1);
+		borders = new Array(1);
+		fonts = new Array(1);
 		w = file.worksheets.length;
 		while (w--) { 
 			// Generate worksheet (gather sharedStrings), and possibly table files, then generate entries for constant files below
@@ -172,7 +172,7 @@ function xlsx(file) {
 			worksheet = file.worksheets[w]; data = worksheet.data;
 			s = '';
 			columns = [];
-    	merges = [];
+			merges = [];
 			i = -1; l = data.length;
 			while (++i < l) {
 				j = -1; k = data[i].length;
@@ -193,7 +193,7 @@ function xlsx(file) {
 					colWidth = 0;
 					if (val && typeof val === 'string' && !isFinite(val)) { 
 						// If value is string, and not string of just a number, place a sharedString reference instead of the value
-            val = escapeXML(val);
+						val = escapeXML(val);
 						sharedStrings[1]++; // Increment total count, unique count derived from sharedStrings[0].length
 						index = sharedStrings[0].indexOf(val);
 						colWidth = val.length;
@@ -469,5 +469,5 @@ function xlsx(file) {
 
 // NodeJs export
 if (typeof exports === 'object' && typeof module === 'object') {
-  module.exports = xlsx;
+	module.exports = xlsx;
 }
