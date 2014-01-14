@@ -163,7 +163,7 @@ function xlsx(file) {
 		// Content dependent
 		styles = new Array(1);
 		borders = new Array(1);
-		fills = new Array(1);
+		fills = new Array(2);
 		fonts = new Array(1);
 		w = file.worksheets.length;
 		while (w--) { 
