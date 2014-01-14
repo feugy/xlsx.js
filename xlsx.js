@@ -189,6 +189,7 @@ function xlsx(file) {
 						italic: cell.italic,
 						fontName: cell.fontName,
 						fontSize: cell.fontSize,
+						fontColor: cell.fontColor,
 						formatCode: cell.formatCode || 'General',
 						fill: cell.fill
 					};
@@ -391,7 +392,7 @@ function xlsx(file) {
 
 			// font declaration: add a new declaration and refer to it in style
 			fontIndex = 0
-			if (style.bold || style.italic || style.fontSize || style.fontName) {
+			if (style.bold || style.italic || style.fontSize || style.fontName || style.fontColor) {
 				font = ['<font>']
 				if (style.bold) {
 					font.push('<b/>');
@@ -400,7 +401,15 @@ function xlsx(file) {
 					font.push('<i/>');
 				}
 				font.push('<sz val="', style.fontSize || defaultFontSize, '"/>');
-				font.push('<color theme="1"/>');
+				if (style.fontColor) {
+					color = style.fontColor;
+					if (color.length === 6) {
+						color = 'FF'+color;
+					}
+					font.push('<color rgb="' + color + '"/>');
+				} else {
+					font.push('<color theme="1"/>');
+				}
 				font.push('<name val="', style.fontName || defaultFontName, '"/>');
 				font.push('<family val="2"/>', '</font>');
 				font = font.join('');
