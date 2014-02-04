@@ -238,6 +238,9 @@ function xlsx(file) {
 					if (colWidth > columns[j].max) {
 						columns[j].max = colWidth;
 					}
+          if (cell.width && cell.width > columns[j].max) {
+            columns[j].max = cell.width;
+          }
 					// store merges if needed and add missing cells. Cannot have rowSpan AND colSpan
 					if (cell.colSpan > 1) {
 						// horizontal merge. ex: B12:E12. Add missing cells (with same attribute but value) to current row
